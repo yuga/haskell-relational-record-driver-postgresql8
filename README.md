@@ -1,4 +1,4 @@
-haskell-relational-record-driver-postgresql83
+haskell-relational-record-driver-postgresql8
 ===============================================
 
-This repository includes a driver of haskell-relational-record to connect PostgreSQL v8.3.
+This repository includes a driver of haskell-relational-record to connect PostgreSQL v8.x.

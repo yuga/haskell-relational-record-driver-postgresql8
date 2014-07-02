@@ -1,6 +1,6 @@
-name:                relational-PostgreSQL83
+name:                relational-postgresql8
 version:             0.1.0.0
-synopsis:            PostgreSQL v8.3 driver for haskell-relational-record
+synopsis:            PostgreSQL v8.x driver for haskell-relational-record
 description:         This package contains a driver of old PostgreSQL for haskell-relational-record.
 homepage:            https://github.com/yuga/haskell-relational-record-driver-postgresql83
 license:             BSD3
@@ -14,19 +14,19 @@ cabal-version:       >=1.8
 
 source-repository    head
   type:              git
-  location:          https://github.com/yuga/haskell-relational-record-driver-postgresql83
+  location:          https://github.com/yuga/haskell-relational-record-driver-postgresql8
 
 library
   exposed-modules:
-                       Database.HDBC.Schema.PostgreSQL83
+                       Database.HDBC.Schema.PostgreSQL8
 
   other-modules:       
-                       Database.Relational.Schema.PgCatalog83.PgClass
-                       Database.Relational.Schema.PgCatalog83.PgNamespace
-                       Database.Relational.Schema.PgCatalog83.PgAttribute
-                       Database.Relational.Schema.PgCatalog83.PgConstraint
-                       Database.Relational.Schema.PgCatalog83.PgType
-                       Database.Relational.Schema.PostgreSQL83
+                       Database.Relational.Schema.PgCatalog8.PgClass
+                       Database.Relational.Schema.PgCatalog8.PgNamespace
+                       Database.Relational.Schema.PgCatalog8.PgAttribute
+                       Database.Relational.Schema.PgCatalog8.PgConstraint
+                       Database.Relational.Schema.PgCatalog8.PgType
+                       Database.Relational.Schema.PostgreSQL8
 
   build-depends:       base <5
                      , containers

@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
--- Module      : Database.HDBC.Schema.PostgreSQL83
+-- Module      : Database.HDBC.Schema.PostgreSQL8
 -- Copyright   : 2013 Kei Hibino, 2014 Shohei Murayama
 -- License     : BSD3
 --
@@ -13,7 +13,7 @@
 --
 -- This module provides driver implementation
 -- to load PostgreSQL system catalog via HDBC.
-module Database.HDBC.Schema.PostgreSQL83 (
+module Database.HDBC.Schema.PostgreSQL8 (
   driverPostgreSQL
   ) where
 
@@ -30,12 +30,12 @@ import Database.Record.TH (makeRecordPersistableWithSqlTypeDefaultFromDefined)
 import Database.HDBC.Record.Query (runQuery')
 import Database.HDBC.Record.Persistable ()
 
-import Database.Relational.Schema.PostgreSQL83
+import Database.Relational.Schema.PostgreSQL8
   (normalizeColumn, notNull, getType, columnQuerySQL,
    primaryKeyLengthQuerySQL, primaryKeyQuerySQL)
-import Database.Relational.Schema.PgCatalog83.PgAttribute (PgAttribute)
-import Database.Relational.Schema.PgCatalog83.PgType (PgType)
-import qualified Database.Relational.Schema.PgCatalog83.PgType as Type
+import Database.Relational.Schema.PgCatalog8.PgAttribute (PgAttribute)
+import Database.Relational.Schema.PgCatalog8.PgType (PgType)
+import qualified Database.Relational.Schema.PgCatalog8.PgType as Type
 
 import Database.HDBC.Schema.Driver
   (TypeMap, Driver, getFieldsWithMap, getPrimaryKey, emptyDriver)
@@ -67,7 +67,7 @@ getPrimaryKey' conn scm' tbl' = do
   mayKeyLen <- runQuery' conn primaryKeyLengthQuerySQL (scm, tbl)
   case mayKeyLen of
     []        -> do
-      putLog $ "getPrimaryKey: Primary key not found."
+      putLog   "getPrimaryKey: Primary key not found."
       return []
     [keyLen]  -> do
       primCols <- runQuery' conn (primaryKeyQuerySQL keyLen) (scm, tbl)
@@ -75,7 +75,7 @@ getPrimaryKey' conn scm' tbl' = do
       putLog $ "getPrimaryKey: primary key = " ++ show primaryKeyCols
       return primaryKeyCols
     _:_:_     -> do
-      putLog $ "getPrimaryKey: Fail to detect primary key. Something wrong."
+      putLog   "getPrimaryKey: Fail to detect primary key. Something wrong."
       return []
 
 getFields' :: IConnection conn

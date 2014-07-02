@@ -2,14 +2,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 -- |
--- Module      : Database.HDBC.Schema.PgCatalog83.PgAttribute
+-- Module      : Database.HDBC.Schema.PgCatalog8.PgAttribute
 -- Copyright   : 2013 Kei Hibino, 2014 Shohei Murayama
 -- License     : BSD3
 --
 -- Maintainer  : shohei.murayama@gmail.com
 -- Stability   : experimental
 -- Portability : unknown
-module Database.Relational.Schema.PgCatalog83.PgAttribute where
+module Database.Relational.Schema.PgCatalog8.PgAttribute where
 
 import Data.Int (Int16, Int32)
 

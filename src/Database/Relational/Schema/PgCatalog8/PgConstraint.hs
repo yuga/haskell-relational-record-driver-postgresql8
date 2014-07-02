@@ -2,14 +2,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 -- |
--- Module      : Database.Relational.Schema.PgCatalog83.PgConstraint
+-- Module      : Database.Relational.Schema.PgCatalog8.PgConstraint
 -- Copyright   : 2013 Kei Hibino, 2014 Shohei Murayama
 -- License     : BSD3
 --
 -- Maintainer  : shohei.murayama@gmail.com
 -- Stability   : experimental
 -- Portability : unknown
-module Database.Relational.Schema.PgCatalog83.PgConstraint where
+module Database.Relational.Schema.PgCatalog8.PgConstraint where
 
 import Data.Int (Int32)
 

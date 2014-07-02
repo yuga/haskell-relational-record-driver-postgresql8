@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 -- |
--- Module      : Database.Relational.Schema.PostgreSQL83
+-- Module      : Database.Relational.Schema.PostgreSQL8
 -- Copyright   : 2013 Kei Hibino, 2014 Shohei Murayama
 -- License     : BSD3
 --
@@ -12,7 +12,7 @@
 -- This module implements queries to get
 -- table schema and table constraint informations
 -- from system catalog of PostgreSQL.
-module Database.Relational.Schema.PostgreSQL83 (
+module Database.Relational.Schema.PostgreSQL8 (
   Column,
 
   normalizeColumn, notNull, getType,
@@ -40,17 +40,17 @@ import Database.Relational.Query
    wheres, (.=.), (.>.), in', values, (!), fst', snd',
    placeholder, asc, value, unsafeProjectSql, (><))
 
-import Database.Relational.Schema.PgCatalog83.PgNamespace (pgNamespace)
-import qualified Database.Relational.Schema.PgCatalog83.PgNamespace as Namespace
-import Database.Relational.Schema.PgCatalog83.PgClass (pgClass)
-import qualified Database.Relational.Schema.PgCatalog83.PgClass as Class
-import Database.Relational.Schema.PgCatalog83.PgConstraint (PgConstraint, pgConstraint)
-import qualified Database.Relational.Schema.PgCatalog83.PgConstraint as Constraint
+import Database.Relational.Schema.PgCatalog8.PgNamespace (pgNamespace)
+import qualified Database.Relational.Schema.PgCatalog8.PgNamespace as Namespace
+import Database.Relational.Schema.PgCatalog8.PgClass (pgClass)
+import qualified Database.Relational.Schema.PgCatalog8.PgClass as Class
+import Database.Relational.Schema.PgCatalog8.PgConstraint (PgConstraint, pgConstraint)
+import qualified Database.Relational.Schema.PgCatalog8.PgConstraint as Constraint
 
-import Database.Relational.Schema.PgCatalog83.PgAttribute (PgAttribute, pgAttribute)
-import qualified Database.Relational.Schema.PgCatalog83.PgAttribute as Attr
-import Database.Relational.Schema.PgCatalog83.PgType (PgType(..), pgType)
-import qualified Database.Relational.Schema.PgCatalog83.PgType as Type
+import Database.Relational.Schema.PgCatalog8.PgAttribute (PgAttribute, pgAttribute)
+import qualified Database.Relational.Schema.PgCatalog8.PgAttribute as Attr
+import Database.Relational.Schema.PgCatalog8.PgType (PgType(..), pgType)
+import qualified Database.Relational.Schema.PgCatalog8.PgType as Type
 
 import Control.Applicative ((<|>))
 
