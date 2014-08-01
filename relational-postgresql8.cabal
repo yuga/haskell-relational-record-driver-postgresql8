@@ -19,14 +19,14 @@ source-repository    head
 library
   exposed-modules:
                        Database.HDBC.Schema.PostgreSQL8
+                       Database.Relational.Schema.PgCatalog8.PgAttribute
+                       Database.Relational.Schema.PgCatalog8.PgType
+                       Database.Relational.Schema.PostgreSQL8
 
   other-modules:       
                        Database.Relational.Schema.PgCatalog8.PgClass
                        Database.Relational.Schema.PgCatalog8.PgNamespace
-                       Database.Relational.Schema.PgCatalog8.PgAttribute
                        Database.Relational.Schema.PgCatalog8.PgConstraint
-                       Database.Relational.Schema.PgCatalog8.PgType
-                       Database.Relational.Schema.PostgreSQL8
 
   build-depends:       base <5
                      , containers
