@@ -1,5 +1,5 @@
 name:                relational-postgresql8
-version:             0.1.0.0
+version:             0.0.1.0
 synopsis:            PostgreSQL v8.x driver for haskell-relational-record
 description:         This package contains a driver of old PostgreSQL for haskell-relational-record.
 homepage:            https://github.com/yuga/haskell-relational-record-driver-postgresql83
