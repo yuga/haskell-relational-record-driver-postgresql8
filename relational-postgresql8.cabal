@@ -20,6 +20,7 @@ library
   exposed-modules:
                        Database.HDBC.Schema.PostgreSQL8
                        Database.Relational.Schema.PostgreSQL8
+                       Database.Relational.Schema.PgCatalog8.Config
                        Database.Relational.Schema.PgCatalog8.PgAttribute
                        Database.Relational.Schema.PgCatalog8.PgClass
                        Database.Relational.Schema.PgCatalog8.PgConstraint
