@@ -51,10 +51,10 @@ logPrefix :: String -> String
 logPrefix =  ("PostgreSQL: " ++)
 
 putLog :: String -> IO ()
-putLog =  putStrLn . logPrefix
+putLog =  TH.reportMessage . logPrefix
 
 compileErrorIO :: String -> IO a
-compileErrorIO =  TH.compileErrorIO . logPrefix
+compileErrorIO =  fail . logPrefix
 
 getPrimaryKey' :: IConnection conn
               => conn
