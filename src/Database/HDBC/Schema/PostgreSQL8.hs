@@ -19,6 +19,7 @@ module Database.HDBC.Schema.PostgreSQL8 (
 
 import Language.Haskell.TH (TypeQ)
 
+import Control.Monad.Trans.Class (lift)
 import Data.Char (toLower)
 import Data.Map (fromList)
 
@@ -37,7 +38,7 @@ import Database.Relational.Schema.PgCatalog8.PgType (PgType)
 import qualified Database.Relational.Schema.PgCatalog8.PgType as Type
 
 import Database.HDBC.Schema.Driver
-  (TypeMap, LogChan, putVerbose,
+  (TypeMap, LogChan, putVerbose, maybeIO,
    Driver, getFieldsWithMap, getPrimaryKey, emptyDriver)
 
 
@@ -86,17 +87,17 @@ getFields' :: IConnection conn
           -> String
           -> String
           -> IO ([(String, TypeQ)], [Int])
-getFields' tmap conn lchan scm' tbl' = do
+getFields' tmap conn lchan scm' tbl' = maybeIO ([], []) id $ do
   let scm = map toLower scm'
       tbl = map toLower tbl'
-  cols <- runQuery' conn columnQuerySQL (scm, tbl)
+  cols <- lift $ runQuery' conn columnQuerySQL (scm, tbl)
   case cols of
-    [] ->  compileErrorIO
+    [] ->  lift . compileErrorIO
            $ "getFields: No columns found: schema = " ++ scm ++ ", table = " ++ tbl
     _  ->  return ()
 
   let notNullIdxs = map fst . filter (notNull . snd) . zip [0..] $ cols
-  putLog lchan
+  lift . putLog lchan
     $  "getFields: num of columns = " ++ show (length cols)
     ++ ", not null columns = " ++ show notNullIdxs
   let getType' col = case getType (fromList tmap) col of
@@ -104,7 +105,7 @@ getFields' tmap conn lchan scm' tbl' = do
                    $ "Type mapping is not defined against PostgreSQL type: " ++ Type.typname (snd col)
         Just p  -> return p
 
-  types <- mapM getType' cols
+  types <- lift $ mapM getType' cols
   return (types, notNullIdxs)
 
 -- | Driver implementation
