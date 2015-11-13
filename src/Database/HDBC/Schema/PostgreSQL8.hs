@@ -18,7 +18,6 @@ module Database.HDBC.Schema.PostgreSQL8 (
   ) where
 
 import Language.Haskell.TH (TypeQ)
-import qualified Language.Haskell.TH.Lib.Extra as TH
 
 import Data.Char (toLower)
 import Data.Map (fromList)
@@ -38,7 +37,7 @@ import Database.Relational.Schema.PgCatalog8.PgType (PgType)
 import qualified Database.Relational.Schema.PgCatalog8.PgType as Type
 
 import Database.HDBC.Schema.Driver
-  (TypeMap, Driver, getFieldsWithMap, getPrimaryKey, emptyDriver)
+  (TypeMap, LogChan, Driver, getFieldsWithMap, getPrimaryKey, emptyDriver)
 
 
 $(makeRecordPersistableWithSqlTypeDefaultFromDefined
@@ -51,17 +50,18 @@ logPrefix :: String -> String
 logPrefix =  ("PostgreSQL: " ++)
 
 putLog :: String -> IO ()
-putLog =  TH.reportMessage . logPrefix
+putLog = (const $ return ()) . logPrefix
 
 compileErrorIO :: String -> IO a
 compileErrorIO =  fail . logPrefix
 
 getPrimaryKey' :: IConnection conn
               => conn
+              -> LogChan
               -> String
               -> String
               -> IO [String]
-getPrimaryKey' conn scm' tbl' = do
+getPrimaryKey' conn lchan scm' tbl' = do
   let scm = map toLower scm'
       tbl = map toLower tbl'
   mayKeyLen <- runQuery' conn primaryKeyLengthQuerySQL (scm, tbl)
@@ -81,10 +81,11 @@ getPrimaryKey' conn scm' tbl' = do
 getFields' :: IConnection conn
           => TypeMap
           -> conn
+          -> LogChan
           -> String
           -> String
           -> IO ([(String, TypeQ)], [Int])
-getFields' tmap conn scm' tbl' = do
+getFields' tmap conn lchan scm' tbl' = do
   let scm = map toLower scm'
       tbl = map toLower tbl'
   cols <- runQuery' conn columnQuerySQL (scm, tbl)
