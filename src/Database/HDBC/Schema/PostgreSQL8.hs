@@ -37,7 +37,8 @@ import Database.Relational.Schema.PgCatalog8.PgType (PgType)
 import qualified Database.Relational.Schema.PgCatalog8.PgType as Type
 
 import Database.HDBC.Schema.Driver
-  (TypeMap, LogChan, Driver, getFieldsWithMap, getPrimaryKey, emptyDriver)
+  (TypeMap, LogChan, putVerbose,
+   Driver, getFieldsWithMap, getPrimaryKey, emptyDriver)
 
 
 $(makeRecordPersistableWithSqlTypeDefaultFromDefined
@@ -49,8 +50,8 @@ $(makeRecordPersistableWithSqlTypeDefaultFromDefined
 logPrefix :: String -> String
 logPrefix =  ("PostgreSQL: " ++)
 
-putLog :: String -> IO ()
-putLog = (const $ return ()) . logPrefix
+putLog :: LogChan -> String -> IO ()
+putLog lchan = putVerbose lchan . logPrefix
 
 compileErrorIO :: String -> IO a
 compileErrorIO =  fail . logPrefix
@@ -67,15 +68,15 @@ getPrimaryKey' conn lchan scm' tbl' = do
   mayKeyLen <- runQuery' conn primaryKeyLengthQuerySQL (scm, tbl)
   case mayKeyLen of
     []        -> do
-      putLog   "getPrimaryKey: Primary key not found."
+      putLog lchan   "getPrimaryKey: Primary key not found."
       return []
     [keyLen]  -> do
       primCols <- runQuery' conn (primaryKeyQuerySQL keyLen) (scm, tbl)
       let primaryKeyCols = normalizeColumn `fmap` primCols
-      putLog $ "getPrimaryKey: primary key = " ++ show primaryKeyCols
+      putLog lchan $ "getPrimaryKey: primary key = " ++ show primaryKeyCols
       return primaryKeyCols
     _:_:_     -> do
-      putLog   "getPrimaryKey: Fail to detect primary key. Something wrong."
+      putLog lchan   "getPrimaryKey: Fail to detect primary key. Something wrong."
       return []
 
 getFields' :: IConnection conn
@@ -95,7 +96,7 @@ getFields' tmap conn lchan scm' tbl' = do
     _  ->  return ()
 
   let notNullIdxs = map fst . filter (notNull . snd) . zip [0..] $ cols
-  putLog
+  putLog lchan
     $  "getFields: num of columns = " ++ show (length cols)
     ++ ", not null columns = " ++ show notNullIdxs
   let getType' col = case getType (fromList tmap) col of
