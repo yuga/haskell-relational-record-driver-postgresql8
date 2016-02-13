@@ -14,11 +14,10 @@ module Database.Relational.Schema.PgCatalog8.PgClass where
 import Data.Int (Int32)
 
 import Database.Record.TH (derivingShow)
-import Database.Relational.Query.TH (defineTableTypesAndRecordDefault)
-
+import Database.Relational.Query.TH (defineTableTypesAndRecord)
 import Database.Relational.Schema.PgCatalog8.Config (config)
 
-$(defineTableTypesAndRecordDefault config
+$(defineTableTypesAndRecord config
   "PG_CATALOG" "pg_class"
   [("oid"         , [t| Int32 |]),
  -- relname        | name      | not null
