@@ -13,13 +13,11 @@ module Database.Relational.Schema.PgCatalog8.PgType where
 
 import Data.Int (Int16, Int32)
 
-import Database.Record.TH (derivingShow)
 import Database.Relational.Query.TH (defineTableTypesAndRecord)
 import Database.Relational.Schema.PgCatalog8.Config (config)
 
 $(defineTableTypesAndRecord config
   "PG_CATALOG" "pg_type"
-
   [
     ("oid", [t|Int32|]),
 -- Table "pg_catalog.pg_type"
@@ -86,4 +84,4 @@ $(defineTableTypesAndRecord config
     ("typdefault", [t|Maybe String|])
 --  typacl         | aclitem[]    |          <= since 9.2
   ]
-  [derivingShow])
+  [''Show])

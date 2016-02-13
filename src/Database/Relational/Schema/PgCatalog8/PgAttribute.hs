@@ -13,13 +13,11 @@ module Database.Relational.Schema.PgCatalog8.PgAttribute where
 
 import Data.Int (Int16, Int32)
 
-import Database.Record.TH (derivingShow)
 import Database.Relational.Query.TH (defineTableTypesAndRecord)
 import Database.Relational.Schema.PgCatalog8.Config (config)
 
 $(defineTableTypesAndRecord config
   "PG_CATALOG" "pg_attribute"
-
   [
 -- Table "pg_catalog.pg_attribute"
 --     Column     |   Type    | Modifiers
@@ -67,4 +65,4 @@ $(defineTableTypesAndRecord config
 --  attfdwoptions | text[]    |           <- since 9.2
     -- ("attfdwoptions", [t|String|])
   ]
-  [derivingShow])
+  [''Show])

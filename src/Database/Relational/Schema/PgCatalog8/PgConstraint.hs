@@ -13,7 +13,6 @@ module Database.Relational.Schema.PgCatalog8.PgConstraint where
 
 import Data.Int (Int32)
 
-import Database.Record.TH (derivingShow)
 import Database.Relational.Query.TH (defineTableTypesAndRecord)
 import Database.Relational.Schema.PgCatalog8.Config (config)
 
@@ -48,4 +47,4 @@ $(defineTableTypesAndRecord config
  -- conbin        | pg_node_tree |
  -- consrc        | text         |
   ]
-  [derivingShow])
+  [''Show])
