@@ -18,8 +18,11 @@ module Database.HDBC.Schema.PostgreSQL8 (
   ) where
 
 import Language.Haskell.TH (TypeQ)
-import qualified Language.Haskell.TH.Lib.Extra as TH
 
+import Control.Applicative ((<|>))
+import Control.Monad (guard)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Trans.Maybe (MaybeT)
 import Data.Char (toLower)
 import Data.Map (fromList)
 
@@ -38,7 +41,8 @@ import Database.Relational.Schema.PgCatalog8.PgType (PgType)
 import qualified Database.Relational.Schema.PgCatalog8.PgType as Type
 
 import Database.HDBC.Schema.Driver
-  (TypeMap, Driver, getFieldsWithMap, getPrimaryKey, emptyDriver)
+  (TypeMap, LogChan, putVerbose, maybeIO, failWith,
+   Driver, hoistMaybe, getFieldsWithMap, getPrimaryKey, emptyDriver)
 
 
 $(makeRecordPersistableWithSqlTypeDefaultFromDefined
@@ -50,57 +54,58 @@ $(makeRecordPersistableWithSqlTypeDefaultFromDefined
 logPrefix :: String -> String
 logPrefix =  ("PostgreSQL: " ++)
 
-putLog :: String -> IO ()
-putLog =  TH.reportMessage . logPrefix
+putLog :: LogChan -> String -> IO ()
+putLog lchan = putVerbose lchan . logPrefix
 
-compileErrorIO :: String -> IO a
-compileErrorIO =  fail . logPrefix
+compileError :: LogChan -> String -> MaybeT IO a
+compileError lchan = failWith lchan . logPrefix
 
 getPrimaryKey' :: IConnection conn
-              => conn
-              -> String
-              -> String
-              -> IO [String]
-getPrimaryKey' conn scm' tbl' = do
+               => conn
+               -> LogChan
+               -> String
+               -> String
+               -> IO [String]
+getPrimaryKey' conn lchan scm' tbl' = do
   let scm = map toLower scm'
       tbl = map toLower tbl'
   mayKeyLen <- runQuery' conn primaryKeyLengthQuerySQL (scm, tbl)
   case mayKeyLen of
     []        -> do
-      putLog   "getPrimaryKey: Primary key not found."
+      putLog lchan   "getPrimaryKey: Primary key not found."
       return []
     [keyLen]  -> do
       primCols <- runQuery' conn (primaryKeyQuerySQL keyLen) (scm, tbl)
       let primaryKeyCols = normalizeColumn `fmap` primCols
-      putLog $ "getPrimaryKey: primary key = " ++ show primaryKeyCols
+      putLog lchan $ "getPrimaryKey: primary key = " ++ show primaryKeyCols
       return primaryKeyCols
     _:_:_     -> do
-      putLog   "getPrimaryKey: Fail to detect primary key. Something wrong."
+      putLog lchan   "getPrimaryKey: Fail to detect primary key. Something wrong."
       return []
 
-getFields' :: IConnection conn
-          => TypeMap
-          -> conn
-          -> String
-          -> String
-          -> IO ([(String, TypeQ)], [Int])
-getFields' tmap conn scm' tbl' = do
+getColumns' :: IConnection conn
+            => TypeMap
+            -> conn
+            -> LogChan
+            -> String
+            -> String
+            -> IO ([(String, TypeQ)], [Int])
+getColumns' tmap conn lchan scm' tbl' = maybeIO ([], []) id $ do
   let scm = map toLower scm'
       tbl = map toLower tbl'
-  cols <- runQuery' conn columnQuerySQL (scm, tbl)
-  case cols of
-    [] ->  compileErrorIO
-           $ "getFields: No columns found: schema = " ++ scm ++ ", table = " ++ tbl
-    _  ->  return ()
+  cols <- lift $ runQuery' conn columnQuerySQL (scm, tbl)
+  guard (not $ null cols) <|>
+    compileError lchan
+    ("getFields: No columns found: schema = " ++ scm ++ ", table = " ++ tbl)
 
   let notNullIdxs = map fst . filter (notNull . snd) . zip [0..] $ cols
-  putLog
+  lift . putLog lchan
     $  "getFields: num of columns = " ++ show (length cols)
     ++ ", not null columns = " ++ show notNullIdxs
-  let getType' col = case getType (fromList tmap) col of
-        Nothing -> compileErrorIO
-                   $ "Type mapping is not defined against PostgreSQL type: " ++ Type.typname (snd col)
-        Just p  -> return p
+  let getType' col =
+        hoistMaybe (getType (fromList tmap) col) <|>
+        compileError lchan
+        ("Type mapping is not defined against PostgreSQL type: " ++ Type.typname (snd col))
 
   types <- mapM getType' cols
   return (types, notNullIdxs)
@@ -108,5 +113,5 @@ getFields' tmap conn scm' tbl' = do
 -- | Driver implementation
 driverPostgreSQL :: IConnection conn => Driver conn
 driverPostgreSQL =
-  emptyDriver { getFieldsWithMap = getFields' }
+  emptyDriver { getFieldsWithMap = getColumns' }
               { getPrimaryKey    = getPrimaryKey' }
